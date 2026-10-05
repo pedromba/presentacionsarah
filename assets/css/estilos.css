@@ -1,0 +1,245 @@
+/* ==========================================================
+   Tarjeta de visita digital — mobile-first, sin dependencias
+   ========================================================== */
+
+:root {
+  --bg: #f1f5f9;
+  --surface: #ffffff;
+  --text: #0f172a;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --accent: #2563eb;
+  --accent-ink: #ffffff;
+  --accent-soft: #dbeafe;
+  --radius: 16px;
+  --shadow: 0 1px 2px rgb(15 23 42 / .06), 0 8px 24px rgb(15 23 42 / .06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b1120;
+    --surface: #111827;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --line: #1f2937;
+    --accent: #3b82f6;
+    --accent-soft: #1e293b;
+    --shadow: none;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+a { color: inherit; text-decoration: none; }
+h1, h2, h3, p { margin: 0; }
+ul { margin: 0; padding: 0; list-style: none; }
+
+.ico {
+  width: 20px; height: 20px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* ---------- Contenedor ---------- */
+.card {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px 16px calc(24px + env(safe-area-inset-bottom));
+  display: grid;
+  gap: 12px;
+}
+
+/* ---------- Selector de idioma ---------- */
+.lang {
+  justify-self: center;
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+}
+.lang button {
+  min-width: 44px;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--muted);
+  font: inherit; font-size: .8rem; font-weight: 700; letter-spacing: .04em;
+  cursor: pointer;
+  transition: background-color .15s ease, color .15s ease;
+}
+.lang button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+
+.hero, .block {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* ---------- Presentación ---------- */
+.hero {
+  padding: 32px 20px 20px;
+  text-align: center;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+}
+
+.avatar {
+  width: 112px; height: 112px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, var(--accent), #7c3aed);
+  color: #fff;
+  font-size: 40px; font-weight: 700; letter-spacing: .02em;
+  box-shadow: 0 0 0 4px var(--surface), 0 0 0 6px var(--accent-soft);
+  overflow: hidden;
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.name { font-size: 1.6rem; line-height: 1.2; letter-spacing: -.01em; }
+.role { color: var(--text); }
+.location { color: var(--muted); font-size: .9rem; }
+
+/* ---------- Acciones rápidas ---------- */
+.quick {
+  width: 100%;
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  grid-auto-flow: column;
+  gap: 8px;
+}
+.quick a, .quick button {
+  display: grid; justify-items: center; gap: 4px;
+  padding: 12px 4px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font: inherit; font-size: .78rem; font-weight: 600;
+  cursor: pointer;
+}
+.quick span { color: var(--text); }
+.quick [hidden] { display: none; }
+
+/* ---------- Bloques ---------- */
+.block { padding: 20px; }
+.block h2 {
+  font-size: .78rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.block > p { color: var(--text); }
+
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.tags li {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: .82rem; font-weight: 600;
+}
+
+/* Proyectos: mismo formato para todos (logo 48px + texto); solo los que
+   tienen web son <a> y muestran la flecha. */
+.projects { display: grid; gap: 8px; }
+.projects .item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.projects .item > div { flex: 1; min-width: 0; }
+.projects a.item { transition: border-color .15s ease; }
+.projects a.item:hover, .projects a.item:focus-visible { border-color: var(--accent); }
+.projects h3 { font-size: 1rem; }
+.projects p { color: var(--muted); font-size: .9rem; line-height: 1.4; }
+.projects .ico { color: var(--muted); }
+
+.logo {
+  width: 48px; height: 48px; flex: none;
+  border-radius: 50%;
+  background: #fff;
+  object-fit: contain;
+}
+
+/* Redes */
+.social { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.social a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-weight: 600; font-size: .95rem;
+}
+.social a:hover, .social a:focus-visible { border-color: var(--accent); color: var(--accent); }
+
+.details { margin: 16px 0 0; display: grid; gap: 10px; }
+.details div {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.details dt { color: var(--muted); font-size: .9rem; }
+.details dd {
+  margin: 0;
+  display: flex; align-items: center; gap: 8px;
+  min-width: 0;
+  font-weight: 500;
+}
+.details dd a { overflow-wrap: anywhere; }
+.copy {
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  font: inherit; font-size: .75rem;
+  cursor: pointer;
+}
+
+.foot { text-align: center; color: var(--muted); font-size: .9rem; padding: 8px 0; }
+
+/* ---------- Toast ---------- */
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom));
+  transform: translate(-50%, 20px);
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: var(--text); color: var(--bg);
+  font-size: .9rem;
+  opacity: 0; pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+
+/* Icono de WhatsApp: relleno y verde de la marca */
+.ico-wa { fill: #25d366; stroke: none; }
+.wa-link { display: inline-flex; align-items: center; gap: 6px; }
+.wa-link .ico { width: 18px; height: 18px; }
