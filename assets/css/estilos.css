@@ -84,6 +84,65 @@ ul { margin: 0; padding: 0; list-style: none; }
   transition: background-color .15s ease, color .15s ease;
 }
 .lang button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+/* En la primera pintura el idioma ya viene elegido: no animar ese salto */
+.lang.no-anim button { transition: none; }
+
+/* ---------- Selector de idioma de primera visita ---------- */
+.lang-gate {
+  position: fixed; inset: 0;
+  display: grid; place-items: center;
+  padding: 20px;
+  background: rgb(15 23 42 / .6);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  z-index: 100;
+}
+.lang-gate[hidden] { display: none; }
+
+.lang-gate-card {
+  width: 100%; max-width: 340px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 20px 60px rgb(15 23 42 / .35);
+  padding: 28px 22px;
+  text-align: center;
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  animation: lang-gate-in .25s ease;
+}
+@keyframes lang-gate-in {
+  from { opacity: 0; transform: translateY(8px) scale(.98); }
+  to { opacity: 1; transform: none; }
+}
+
+.lang-gate-icon { width: 28px; height: 28px; color: var(--accent); }
+
+.lang-gate-title { display: grid; gap: 2px; }
+.lang-gate-title span { display: block; font-weight: 700; font-size: 1.02rem; color: var(--text); }
+
+.lang-gate-opts { width: 100%; display: grid; gap: 10px; }
+.lang-gate-opts button {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 50px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: none;
+  color: var(--text);
+  font: inherit; font-size: 1rem; font-weight: 600;
+  cursor: pointer;
+  transition: border-color .15s ease, background-color .15s ease, color .15s ease;
+}
+.lang-gate-opts button:hover,
+.lang-gate-opts button:focus-visible {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* Bloquea el scroll de fondo mientras el selector está abierto */
+body.lang-gate-open { overflow: hidden; }
 
 .hero, .block {
   background: var(--surface);
@@ -123,8 +182,10 @@ ul { margin: 0; padding: 0; list-style: none; }
   width: 100%;
   margin-top: 20px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  /* Una columna por acción, todas iguales. El minmax(0,1fr) deja que se
+     encojan: sin él, el 4º botón (Compartir) desborda a lo ancho. */
   grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
   gap: 8px;
 }
 .quick a, .quick button {
@@ -236,7 +297,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 @media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; }
+  * { transition: none !important; animation: none !important; }
 }
 
 /* Icono de WhatsApp: relleno y verde de la marca */

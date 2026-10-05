@@ -155,22 +155,33 @@
   var STORE_KEY = 'tarjeta-idioma';
   var current = 'es';
 
-  /* ---------- Idioma: ?lang= > elección guardada > idioma del móvil ---------- */
-  function pickLang() {
-    var qs = (new URLSearchParams(location.search).get('lang') || '').slice(0, 2).toLowerCase();
-    if (I18N[qs]) return qs;
-
+  function getSaved() {
     try {
-      var saved = localStorage.getItem(STORE_KEY);
-      if (I18N[saved]) return saved;
-    } catch (e) { /* almacenamiento bloqueado */ }
+      var v = localStorage.getItem(STORE_KEY);
+      return I18N[v] ? v : null;
+    } catch (e) { return null; } // almacenamiento bloqueado (privado, cookies desactivadas…)
+  }
 
+  function setSaved(lang) {
+    try { localStorage.setItem(STORE_KEY, lang); } catch (e) { /* ignorar */ }
+  }
+
+  function detectBrowserLang() {
     var prefs = navigator.languages || [navigator.language || ''];
     for (var i = 0; i < prefs.length; i++) {
       var code = String(prefs[i]).slice(0, 2).toLowerCase();
       if (I18N[code]) return code;
     }
     return 'es';
+  }
+
+  var qsLang = (new URLSearchParams(location.search).get('lang') || '').slice(0, 2).toLowerCase();
+  if (!I18N[qsLang]) qsLang = null;
+  var savedLang = getSaved();
+
+  /* ---------- Idioma inicial: ?lang= > elección guardada > idioma del móvil ---------- */
+  function pickLang() {
+    return qsLang || savedLang || detectBrowserLang();
   }
 
   function setMeta(sel, value) {
@@ -216,14 +227,40 @@
     });
   }
 
+  var langBox = document.getElementById('lang');
+  langBox.classList.add('no-anim');
   apply(pickLang());
+  requestAnimationFrame(function () { langBox.classList.remove('no-anim'); });
 
-  document.getElementById('lang').addEventListener('click', function (ev) {
+  langBox.addEventListener('click', function (ev) {
     var btn = ev.target.closest('button[data-lang]');
     if (!btn) return;
     apply(btn.dataset.lang);
-    try { localStorage.setItem(STORE_KEY, current); } catch (e) { /* ignorar */ }
+    setSaved(current);
   });
+
+  // Un enlace compartido con ?lang= cuenta como elección explícita: se
+  // recuerda para que, al volver sin el parámetro, siga en ese idioma.
+  if (qsLang && !savedLang) setSaved(qsLang);
+
+  /* ---------- Selector de idioma de primera visita ---------- */
+  // Solo se muestra si no hay ni idioma guardado ni forzado por la URL.
+  var gate = document.getElementById('langGate');
+  if (!qsLang && !savedLang) {
+    document.body.classList.add('lang-gate-open');
+    gate.hidden = false;
+    var firstGateBtn = gate.querySelector('button[data-lang="' + current + '"]') || gate.querySelector('button');
+    if (firstGateBtn) firstGateBtn.focus();
+
+    gate.addEventListener('click', function (ev) {
+      var btn = ev.target.closest('button[data-lang]');
+      if (!btn) return;
+      apply(btn.dataset.lang);
+      setSaved(current);
+      gate.hidden = true;
+      document.body.classList.remove('lang-gate-open');
+    });
+  }
 
   /* ---------- Aviso flotante ---------- */
   var toast = document.getElementById('toast');
